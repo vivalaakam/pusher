@@ -14,6 +14,8 @@ const WebSocketServer = require('websocket').server
 
 const asyncMiddleware = require('./utils/asyncMiddleware')
 const config = require('./config.js')
+const wsHost = config.pusher_server.replace(/^http/, 'ws')
+
 
 
 bluebird.promisifyAll(redis)
@@ -38,8 +40,10 @@ app.post('/register', passport.authenticate('jwt', { session: false }), asyncMid
 
   await client.saddAsync(req.user.uid, hex)
 
+
   return res.send({
-    hex
+    hex,
+    connect: wsHost + '/' + hex
   })
 }))
 
