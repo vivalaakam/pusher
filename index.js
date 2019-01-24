@@ -18,7 +18,7 @@ const config = require('./config.js')
 
 bluebird.promisifyAll(redis)
 
-const client = redis.createClient()
+const client = redis.createClient(config.redis_url)
 
 const app = express()
 app.use(bodyParser.urlencoded({ extended: false }))
