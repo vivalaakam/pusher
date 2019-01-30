@@ -17,7 +17,6 @@ const config = require('./config.js')
 const wsHost = config.pusher_server.replace(/^http/, 'ws')
 
 
-
 bluebird.promisifyAll(redis)
 
 const client = redis.createClient(config.redis_url)
@@ -47,8 +46,8 @@ app.post('/register', passport.authenticate('jwt', { session: false }), asyncMid
   })
 }))
 
-app.post('/push', (req, res) => {
-  let { user, room, message } = req.body
+app.post('/push', passport.authenticate('hmac', { session: false }), (req, res) => {
+  let { user, room } = req.user
 
   if (!Array.isArray(user)) {
     user = [user]
@@ -62,7 +61,7 @@ app.post('/push', (req, res) => {
             if (rep) {
               connections[sub].sendUTF(JSON.stringify({
                 room,
-                message
+                message: req.body
               }))
             }
           })
